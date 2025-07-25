@@ -9,9 +9,7 @@ import io.vertx.ext.web.Router;
 public class HttpServerVerticle extends VerticleBase {
 
   @Override
-  public Future<?> start() throws Exception {
-
-    final int PORT = 8080;
+  public Future<?> start(){
 
     Router router = Router.router(vertx);
 
@@ -19,14 +17,14 @@ public class HttpServerVerticle extends VerticleBase {
 
     route.registerRoute(router);
 
-    router.route().failureHandler(ctx -> {
-      int statusCode = ctx.statusCode() != -1 ? ctx.statusCode() : 500;
-      String failedMessage = ctx.failure().getMessage();
+    handleRouteFailure(router);
 
-      ctx.response().setStatusCode(statusCode).end(
-        new JsonObject().put("message", failedMessage).encode()
-      );
-    });
+    return createHttpServer(router);
+  }
+
+  private Future<?> createHttpServer(Router router){
+
+    final int PORT = 8080;
 
     return vertx.createHttpServer()
       .requestHandler(router)
@@ -37,6 +35,17 @@ public class HttpServerVerticle extends VerticleBase {
       .onFailure(throwable -> {
         System.out.println("Unable to start the server");
       });
+  }
+
+  private void handleRouteFailure(Router router){
+    router.route().failureHandler(ctx -> {
+      int statusCode = ctx.statusCode() != -1 ? ctx.statusCode() : 500;
+      String failedMessage = ctx.failure().getMessage();
+
+      ctx.response().setStatusCode(statusCode).end(
+        new JsonObject().put("message", failedMessage).encode()
+      );
+    });
   }
 
 }
