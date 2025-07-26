@@ -38,6 +38,8 @@ dependencies {
   testImplementation("org.junit.jupiter:junit-jupiter:$junitJupiterVersion")
   compileOnly("org.projectlombok:lombok:1.18.30")
   annotationProcessor("org.projectlombok:lombok:1.18.30")
+  // https://mvnrepository.com/artifact/io.vertx/vertx-circuit-breaker
+  implementation("io.vertx:vertx-circuit-breaker:5.0.1")
 }
 
 java {

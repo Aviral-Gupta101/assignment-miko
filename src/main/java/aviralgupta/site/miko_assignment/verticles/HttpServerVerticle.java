@@ -1,6 +1,8 @@
 package aviralgupta.site.miko_assignment.verticles;
 
 import aviralgupta.site.miko_assignment.routes.MyRoute;
+import io.vertx.circuitbreaker.CircuitBreaker;
+import io.vertx.circuitbreaker.CircuitBreakerOptions;
 import io.vertx.core.Future;
 import io.vertx.core.VerticleBase;
 import io.vertx.core.json.JsonObject;
@@ -11,9 +13,17 @@ public class HttpServerVerticle extends VerticleBase {
   @Override
   public Future<?> start(){
 
+    CircuitBreaker circuitBreaker = CircuitBreaker.create("myapp-cb", vertx,
+      new CircuitBreakerOptions()
+        .setMaxFailures(3)
+        .setTimeout(2000)
+        .setFallbackOnFailure(true)
+        .setResetTimeout(5000)
+    );
+
     Router router = Router.router(vertx);
 
-    MyRoute route = new MyRoute();
+    MyRoute route = new MyRoute(circuitBreaker);
 
     route.registerRoute(router);
 
