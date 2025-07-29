@@ -59,14 +59,11 @@ public class HttpServerVerticleTest {
         assertEquals(200, response.statusCode());
         JsonObject json = response.bodyAsJsonObject();
 
-        // ✅ Just checking if keys exist
         assertTrue(json.containsKey("author_name"));
         assertTrue(json.containsKey("post_title"));
         testContext.completeNow();
       }))
       .onFailure(testContext::failNow);
   }
-
-
 
 }
